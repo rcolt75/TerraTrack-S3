@@ -1,0 +1,100 @@
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:07:49 hvac-crawler python3[800]: Error sending to UART: write failed: [Errno 5] Input/output error
+Mar 14 20:16:51 hvac-crawler systemd[1]: Stopping hvac-crawler.service - HVAC Crawler Backend Server...
+Mar 14 20:16:51 hvac-crawler systemd[1]: hvac-crawler.service: Killing process 889 (rpicam-vid) with signal SIGKILL.
+Mar 14 20:16:51 hvac-crawler systemd[1]: hvac-crawler.service: Deactivated successfully.
+Mar 14 20:16:51 hvac-crawler systemd[1]: Stopped hvac-crawler.service - HVAC Crawler Backend Server.
+Mar 14 20:16:51 hvac-crawler systemd[1]: hvac-crawler.service: Consumed 29min 42.348s CPU time.
+Mar 14 20:16:51 hvac-crawler systemd[1]: Started hvac-crawler.service - HVAC Crawler Backend Server.
+Mar 14 21:04:35 hvac-crawler systemd[1]: Stopping hvac-crawler.service - HVAC Crawler Backend Server...
+Mar 14 21:04:35 hvac-crawler systemd[1]: hvac-crawler.service: Killing process 1289 (rpicam-vid) with signal SIGKILL.
+Mar 14 21:04:35 hvac-crawler systemd[1]: hvac-crawler.service: Deactivated successfully.
+Mar 14 21:04:35 hvac-crawler systemd[1]: Stopped hvac-crawler.service - HVAC Crawler Backend Server.
+Mar 14 21:04:35 hvac-crawler systemd[1]: hvac-crawler.service: Consumed 8min 5.535s CPU time.
+Mar 14 21:04:35 hvac-crawler systemd[1]: Started hvac-crawler.service - HVAC Crawler Backend Server.
+Mar 14 21:11:08 hvac-crawler systemd[1]: Stopping hvac-crawler.service - HVAC Crawler Backend Server...
+Mar 14 21:11:08 hvac-crawler systemd[1]: hvac-crawler.service: Killing process 1386 (rpicam-vid) with signal SIGKILL.
+Mar 14 21:11:08 hvac-crawler systemd[1]: hvac-crawler.service: Deactivated successfully.
+Mar 14 21:11:08 hvac-crawler systemd[1]: Stopped hvac-crawler.service - HVAC Crawler Backend Server.
+Mar 14 21:11:08 hvac-crawler systemd[1]: hvac-crawler.service: Consumed 1min 10.099s CPU time.
+Mar 14 21:11:08 hvac-crawler systemd[1]: Started hvac-crawler.service - HVAC Crawler Backend Server.
+Mar 14 21:14:41 hvac-crawler systemd[1]: Stopping hvac-crawler.service - HVAC Crawler Backend Server...
+Mar 14 21:14:41 hvac-crawler systemd[1]: hvac-crawler.service: Killing process 1469 (rpicam-vid-ust) with signal SIGKILL.
+Mar 14 21:14:41 hvac-crawler systemd[1]: hvac-crawler.service: Deactivated successfully.
+Mar 14 21:14:41 hvac-crawler systemd[1]: Stopped hvac-crawler.service - HVAC Crawler Backend Server.
+Mar 14 21:14:41 hvac-crawler systemd[1]: hvac-crawler.service: Consumed 38.625s CPU time.
+Mar 14 21:14:41 hvac-crawler systemd[1]: Started hvac-crawler.service - HVAC Crawler Backend Server.
+Mar 14 21:16:53 hvac-crawler systemd[1]: Stopping hvac-crawler.service - HVAC Crawler Backend Server...
+Mar 14 21:16:53 hvac-crawler systemd[1]: hvac-crawler.service: Killing process 1547 (rpicam-vid) with signal SIGKILL.
+Mar 14 21:16:53 hvac-crawler systemd[1]: hvac-crawler.service: Deactivated successfully.
+Mar 14 21:16:53 hvac-crawler systemd[1]: Stopped hvac-crawler.service - HVAC Crawler Backend Server.
+Mar 14 21:16:53 hvac-crawler systemd[1]: hvac-crawler.service: Consumed 1.128s CPU time.
+Mar 14 21:16:53 hvac-crawler systemd[1]: Started hvac-crawler.service - HVAC Crawler Backend Server.
+Mar 14 21:21:28 hvac-crawler systemd[1]: Stopping hvac-crawler.service - HVAC Crawler Backend Server...
+Mar 14 21:21:28 hvac-crawler systemd[1]: hvac-crawler.service: Killing process 1620 (rpicam-vid) with signal SIGKILL.
+Mar 14 21:21:28 hvac-crawler systemd[1]: hvac-crawler.service: Deactivated successfully.
+Mar 14 21:21:28 hvac-crawler systemd[1]: Stopped hvac-crawler.service - HVAC Crawler Backend Server.
+Mar 14 21:21:28 hvac-crawler systemd[1]: hvac-crawler.service: Consumed 1.162s CPU time.
+Mar 14 21:21:28 hvac-crawler systemd[1]: Started hvac-crawler.service - HVAC Crawler Backend Server.

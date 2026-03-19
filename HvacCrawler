@@ -1,0 +1,64 @@
+# HVAC Crawler: Cobra Flex & Arducam Integration
+
+## 1. System Architecture
+* **Controller:** Laptop running custom Electron Desktop App (Node.js/Chromium).
+* **Network Hub:** GL.iNet Router (`10.250.2.x` Subnet).
+* **Node (Crawler):** Raspberry Pi 5 (`10.250.2.247`).
+* **Chassis:** Waveshare Cobra Flex Drive-by-Wire.
+* **Vision:** Arducam Mini.
+
+## 2. Hardware Interface Prerequisites (Raspberry Pi)
+The following hardware buses must be enabled in `/boot/firmware/config.txt` to allow the Pi to communicate with the peripherals:
+- [ ] **I2C Enabled** (For Cobra Flex motor driver & Arducam control registers).
+- [ ] **SPI Enabled** (For Arducam Mini high-speed video data transfer).
+- [ ] **UART Enabled** (Optional: For serial debugging if needed later).
+
+## 3. Automation Pipeline (Antigravity IDE)
+To streamline development, we will map IDE build tasks to auto-deploy code via SSH to the Pi.
+- [ ] **Task 1: `deploy-backend`** -> Uses `rsync` or `scp` to push Python motor/camera scripts to the Pi on save.
+- [ ] **Task 2: `restart-service`** -> Sends an SSH command to restart the `systemd` Python service on the Pi after a code push.
+- [ ] **Task 3: `build-electron`** -> Compiles the Node.js/React frontend into a Windows `.exe` for the client.
+
+## 4. Software Stack: The Pi Backend (Python)
+The Pi acts as a headless UDP/TCP server waiting for commands from the Electron app.
+- [ ] **Motor Controller (`motors.py`):** Translates incoming vector data (X/Y joystick) into I2C PWM signals for the Cobra Flex.
+- [ ] **Camera Streamer (`stream.py`):** Captures frames from the Arducam Mini via SPI and streams them as a low-latency UDP stream or MJPEG over HTTP.
+- [ ] **Main Socket Loop (`server.py`):** Listens on port `5005` for incoming commands from the laptop.
+
+## 5. Software Stack: The Controller Frontend (Electron)
+The desktop application the client will run.
+- [ ] **Main Process (`main.js`):** Handles OS-level tasks like joystick/gamepad API polling and raw socket communication to `10.250.2.247`.
+- [ ] **Renderer Process (`index.html` / `app.js`):** The UI dashboard showing the live camera feed canvas, network latency (RSSI), and motor telemetry.
+- [ ] **IPC Bridge (`preload.js`):** Securely passes UI button clicks and gamepad data from the Renderer to the Main Process.
+
+## 6. Pre-Flight Testing Sequence
+- [ ] **Network Check:** Verify ping `10.250.2.247` < 10ms.
+- [ ] **Arducam Test:** Run raw capture script on Pi to verify SPI bus integrity.
+- [ ] **Motor Deadzone Calibration:** Determine the minimum PWM value to overcome the static friction of the Cobra Flex tracks.
+- [ ] **Power Draw Audit:** Measure 5V rail voltage sag during simultaneous motor stall and Wi-Fi transmission.
+
+## 7. Inter-Board Wiring (Pi 5 to Waveshare ESP32)
+* **Data Protocol:** 3.3V UART (Baud: 115200)
+* **OS Interface:** `/dev/serial0`
+* **Pinout:**
+  * Pi Pin 8 (GPIO 14 - TX)  -> ESP32 RX
+  * Pi Pin 10 (GPIO 15 - RX) -> ESP32 TX
+  * Pi Pin 6 (Ground)        -> ESP32 / UGV Ground (MANDATORY)
+
+## 8. Automated Pi OS Provisioning Script
+Run this script once via SSH to prep the Pi for the crawler hardware. It configures the UART, I2C, and SPI buses automatically.
+```bash
+#!/bin/bash
+echo "Configuring Raspberry Pi Hardware Buses..."
+
+# 1. Free up GPIO 14/15 for ESP32 Communication (Disable Console, Enable Hardware)
+sudo raspi-config nonint do_serial 2
+
+# 2. Enable I2C (For potential sensors/Arducam control)
+sudo raspi-config nonint do_i2c 0
+
+# 3. Enable SPI (For Arducam Mini high-speed video)
+sudo raspi-config nonint do_spi 0
+
+echo "Hardware buses configured. Rebooting..."
+sudo reboot

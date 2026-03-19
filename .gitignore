@@ -1,0 +1,15 @@
+node_modules/
+.npm/
+__pycache__/
+*.pyc
+*.pyo
+venv/
+env/
+.env
+.DS_Store
+*.log
+desktop_error.txt
+hvac-debug*.txt
+fetch_*.py
+build/
+.vscode/
