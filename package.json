@@ -1,0 +1,10 @@
+{
+  "name": "terratrack-s3-root",
+  "version": "1.0.0",
+  "description": "Root wrapper for the TerraTrack-S3 dashboard",
+  "scripts": {
+    "start": "cd ui && npm start",
+    "pack": "cd ui && npm run pack",
+    "dist": "cd ui && npm run dist"
+  }
+}

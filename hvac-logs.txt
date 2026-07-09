@@ -1,6 +1,0 @@
-Mar 15 01:05:53 hvac-crawler systemd[1]: Stopping hvac-crawler.service - HVAC Crawler Backend Server...
-Mar 15 01:05:53 hvac-crawler systemd[1]: hvac-crawler.service: Killing process 10892 (rpicam-vid) with signal SIGKILL.
-Mar 15 01:05:53 hvac-crawler systemd[1]: hvac-crawler.service: Deactivated successfully.
-Mar 15 01:05:53 hvac-crawler systemd[1]: Stopped hvac-crawler.service - HVAC Crawler Backend Server.
-Mar 15 01:05:53 hvac-crawler systemd[1]: hvac-crawler.service: Consumed 4min 51.806s CPU time.
-Mar 15 01:05:53 hvac-crawler systemd[1]: Started hvac-crawler.service - HVAC Crawler Backend Server.

@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HVAC Crawler Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;800&family=Orbitron:wght@500;700;900&display=swap');
+        
+        body { 
+            font-family: 'Exo 2', sans-serif; 
+            background-color: #090b10;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(0, 229, 255, 0.08) 0%, transparent 60%),
+                linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            background-position: center 0, center center, center center;
+            color: #e2e8f0; 
+            margin: 0; 
+            padding: 20px; 
+            height: 100vh;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        
+        .dashboard { 
+            display: grid; 
+            grid-template-columns: minmax(400px, 1.5fr) minmax(300px, 1.2fr); 
+            grid-template-rows: auto 1fr;
+            grid-template-areas: 
+                "header header"
+                "main sidebar";
+            gap: 20px; 
+            height: 100%;
+        }
+        
+        header {
+            grid-area: header;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 255, 204, 0.3);
+            padding-bottom: 15px;
+        }
+        
+        h1 { margin: 0; font-size: 32px; font-weight: 900; letter-spacing: 4px; color: #e2e8f0; font-family: 'Orbitron', sans-serif; text-transform: uppercase; text-shadow: 0 0 10px rgba(0,229,255,0.3);}
+        h1 span { color: #00e5ff; font-weight: 900; text-shadow: 0 0 15px rgba(0,229,255,0.8);}
+        
+        @keyframes pulseConnected {
+            0% { box-shadow: 0 0 5px #00e5ff, inset 0 0 5px #00e5ff; }
+            50% { box-shadow: 0 0 20px #00e5ff, inset 0 0 10px #00e5ff; }
+            100% { box-shadow: 0 0 5px #00e5ff, inset 0 0 5px #00e5ff; }
+        }
+        .status-badge {
+            display: flex;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border: 1px solid rgba(0, 229, 255, 0.4);
+            border-radius: 4px; /* Harsher edges for sci-fi */
+            font-size: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #00e5ff;
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+        }
+        
+        .status-dot { width: 10px; height: 10px; border-radius: 0; background: #ff4081; margin-right: 12px; box-shadow: 0 0 10px #ff4081; transform: rotate(45deg); }
+        .status-connected { background: #00e5ff; animation: pulseConnected 2.5s infinite; }
+        
+        .panel { 
+            background: rgba(10, 14, 23, 0.7); 
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            border-top: 1px solid rgba(0, 229, 255, 0.3);
+            border-bottom: 1px solid rgba(0, 229, 255, 0.05);
+            border-radius: 2px;
+            padding: 15px; 
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(0, 229, 255, 0.02);
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+            min-height: 0; /* Critical for flex/grid children shrinking */
+        }
+        
+        /* Sci-Fi Decorative Corners */
+        .panel::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 30px; height: 2px; background: #00e5ff; box-shadow: 0 0 10px #00e5ff;
+        }
+        .panel::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 2px; height: 30px; background: #00e5ff; box-shadow: 0 0 10px #00e5ff;
+        }
+        
+        .main-panel { grid-area: main; position: relative; min-width: 0; min-height: 0; }
+        .sidebar { grid-area: sidebar; gap: 24px; display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow-y: auto; padding-right: 5px; }
+        
+        /* Video Stream container */
+        .video-container { 
+            background: #000; 
+            flex-grow: 1; 
+            min-height: 0;
+            border-radius: 2px;
+            border: 1px solid #1e293b;
+            overflow: hidden; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            position: relative;
+            box-shadow: inset 0 0 50px rgba(0, 0, 0, 1), 0 5px 20px rgba(0,0,0,0.8);
+        }
+        
+        /* Scanline overlay for live video */
+        .video-container::after {
+            content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2; background-size: 100% 2px, 3px 100%; pointer-events: none;
+        }
+
+        #camera-img { width: 100%; height: 100%; object-fit: contain; z-index: 1; display: none; filter: contrast(1.1) saturate(1.2) sepia(0.2) hue-rotate(180deg); }
+        .no-signal { position: absolute; color: #ff4081; font-family: 'Orbitron', sans-serif; font-size: 28px; font-weight: 700; z-index: 0; letter-spacing: 6px; text-shadow: 0 0 15px rgba(255, 64, 129, 0.8); animation: blink 1.5s step-end infinite;}
+        
+        @keyframes blink { 50% { opacity: 0; } }
+        
+        h2 { font-size: 14px; font-family: 'Orbitron', sans-serif; font-weight: 700; text-transform: uppercase; color: #00e5ff; margin-top: 0; margin-bottom: 20px; letter-spacing: 3px; text-shadow: 0 0 8px rgba(0,229,255,0.4);}
+        
+        /* Telemetry Rows */
+        .telemetry-row { 
+            display: flex; justify-content: space-between; margin-bottom: 8px; padding: 8px 12px; 
+            background: rgba(0, 0, 0, 0.6); 
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            border-left: 3px solid #00e5ff;
+            font-family: 'Orbitron', sans-serif; font-size: 13px; font-weight: 700; color: #94a3b8;
+            box-shadow: inset 0 0 10px rgba(0,229,255,0.05);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .telemetry-row.accent { border-left: 3px solid #ff6d00; border-color: rgba(255, 109, 0, 0.2); box-shadow: inset 0 0 10px rgba(255,109,0,0.05); }
+        .telemetry-row.accent span:first-child { color: #a1a1aa; }
+        .telemetry-row span:last-child { font-size: 16px; color: #00e5ff; text-shadow: 0 0 10px rgba(0,229,255,0.6);}
+        .telemetry-row.accent span:last-child { color: #ff6d00; text-shadow: 0 0 10px rgba(255,109,0,0.6);}
+        
+        /* Diagram / Visualizer */
+        .visualizer-container {
+            display: flex; justify-content: center; align-items: center; flex-grow: 1; margin-top: 10px;
+            min-height: 0; min-width: 0; width: 100%; height: 100%;
+        }
+        
+        /* Realistic SVG Crawler */
+        .crawler-svg { width: 100%; height: 100%; max-width: none; max-height: none; overflow: visible; flex-shrink: 1; object-fit: contain; }
+        
+        .cascade-arrow { 
+            stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; fill: none; 
+            opacity: 0.15;
+            stroke: #00606b;
+            transition: opacity 0.2s, filter 0.2s, stroke 0.2s;
+        }
+        
+        .cascade-arrow.lit { opacity: 1; filter: drop-shadow(0 0 15px #00e5ff); stroke: #00e5ff; }
+        
+        .chassis { fill: rgba(10, 14, 23, 0.9); filter: drop-shadow(0 0 15px rgba(0,229,255,0.4)); stroke: #00e5ff; stroke-width: 2;}
+        .chassis-inner { fill: none; stroke: rgba(0,229,255,0.2); stroke-width: 1; }
+        .chassis-accent { fill: #00e5ff; }
+        
+        /* Sci-Fi Drone Engine / Core */
+        .core-glow { fill: rgba(0,229,255,0.1); stroke: #00e5ff; stroke-width: 1; filter: drop-shadow(0 0 15px rgba(0,229,255,0.8)); }
+        .core-pulse { fill: #00e5ff; animation: pulseCore 2s infinite; }
+        @keyframes pulseCore {
+            0% { opacity: 0.5; r: 4; }
+            50% { opacity: 1; r: 8; }
+            100% { opacity: 0.5; r: 4; }
+        }
+        
+        /* Boom Hook / Radar Arm */
+        .boom-base { fill: rgba(10, 14, 23, 1); stroke: #ff6d00; stroke-width: 2; filter: drop-shadow(0 0 10px rgba(255,109,0,0.5));}
+        .boom-arm { fill: url(#boom-metal); filter: drop-shadow(2px 5px 5px rgba(0,0,0,0.5));}
+        .hook-head { fill: rgba(10,14,23,0.9); transition: transform 0.1s linear; transform-origin: 70px 30px; filter: drop-shadow(0 0 5px rgba(255,109,0,0.4)); stroke: #ff6d00; stroke-width: 2;}
+        .hook-head.glow { filter: drop-shadow(0 0 20px #ff6d00); stroke: #fff;}
+        
+        @keyframes scrollTrack {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-30px); }
+        }
+        
+        /* Realistic Gamepad Schematic */
+        .gamepad-container-wrap {
+            width: 100%; display: flex; justify-content: center; align-items: center; margin-top: 10px;
+        }
+
+        .gamepad-visuals {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; width: 100%; max-width: 320px;
+            transform-origin: center center;
+        }
+        
+        /* Triggers rendered above the chassis but within document flow */
+        .shoulder-region { width: 220px; display: flex; justify-content: space-between; position: relative; z-index: 5; margin-bottom: -15px;}
+        
+        .trigger-container { display: flex; flex-direction: column; align-items: center;}
+        .trigger-bar { width: 60px; height: 24px; background: rgba(0,0,0,0.8); border: 1px solid #00e5ff; position: relative; overflow: hidden; border-radius: 2px; box-shadow: inset 0 0 10px rgba(0,229,255,0.2), 0 -2px 5px rgba(0,0,0,0.8);}
+        .trigger-fill { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: #00e5ff; transition: height 0.05s, box-shadow 0.1s; border-radius: 0;}
+        .trigger-fill.active { box-shadow: 0 0 15px rgba(0, 229, 255, 0.8); }
+        .trigger-label { font-size: 10px; font-weight: 700; color: #00e5ff; margin-bottom: 6px; font-family: 'Orbitron', sans-serif; letter-spacing: 2px; text-shadow: 0 0 5px rgba(0,229,255,0.4);}
+        
+        .gamepad-chassis {
+            width: 320px; height: 140px;
+            border-radius: 4px; /* More angular chassis */
+            background: rgba(10, 14, 23, 0.9);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            box-shadow: 
+                inset 0 0 20px rgba(0, 229, 255, 0.05),
+                inset 0 -4px 6px rgba(0, 0, 0, 0.8),
+                0 10px 20px rgba(0,0,0,0.9);
+            z-index: 10;
+            display: flex; justify-content: center; align-items: flex-end; padding-bottom: 20px; position: relative; gap: 20px;
+            clip-path: polygon(20px 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%, 0 20px);
+        }
+        
+        /* A subtle line connecting the sticks to look like a controller body */
+        .chassis-bridge { position: absolute; width: 120px; height: 2px; background: rgba(0,229,255,0.3); bottom: 40px; left: 100px; z-index: -1; box-shadow: 0 0 5px rgba(0,229,255,0.5);}
+        
+        .stick-container { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 20; margin-top: 50px;}
+        .stick-bg { 
+            width: 70px; height: 70px; border-radius: 50%; 
+            background: rgba(10, 14, 23, 0.6); 
+            border: 1px solid rgba(0, 229, 255, 0.3); position: relative; display: flex; align-items: center; justify-content: center; 
+            box-shadow: inset 0 0 15px rgba(0, 229, 255, 0.1), 0 0 10px rgba(0, 0, 0, 0.8);
+        }
+        
+        /* HUD Crosshairs for the joysticks */
+        .stick-bg::before {
+            content: ''; position: absolute; width: 100%; height: 1px; background: rgba(0, 229, 255, 0.3);
+        }
+        .stick-bg::after {
+            content: ''; position: absolute; width: 1px; height: 100%; background: rgba(0, 229, 255, 0.3);
+        }
+        
+        .stick-thumb { 
+            width: 36px; height: 36px; border-radius: 50%; 
+            background: radial-gradient(circle at 30% 30%, rgba(0, 229, 255, 0.2), #090b10); 
+            border: 1px solid #00e5ff; position: absolute; transition: transform 0.05s linear; 
+            box-shadow: inset 0 0 10px rgba(0, 229, 255, 0.4), 0 4px 10px rgba(0, 0, 0, 0.8); 
+            z-index: 2;
+        }
+        
+        /* D-Pad */
+        .d-pad { position: absolute; left: 40px; top: 30px; width: 60px; height: 60px; display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr; gap: 2px; }
+        .d-btn { background: rgba(10, 14, 23, 0.8); border: 1px solid rgba(0, 229, 255, 0.4); box-shadow: inset 0 0 5px rgba(0,229,255,0.2), 0 2px 4px rgba(0,0,0,0.8); z-index: 21;}
+        .d-up { grid-column: 2; grid-row: 1; border-radius: 2px 2px 0 0; border-bottom: none;}
+        .d-down { grid-column: 2; grid-row: 3; border-radius: 0 0 2px 2px; border-top: none;}
+        .d-left { grid-column: 1; grid-row: 2; border-radius: 2px 0 0 2px; border-right: none;}
+        .d-right { grid-column: 3; grid-row: 2; border-radius: 0 2px 2px 0; border-left: none;}
+        .d-center { grid-column: 2; grid-row: 2; background: rgba(10, 14, 23, 0.8); border: none; box-shadow: inset 0 0 10px rgba(0,0,0,0.8); z-index: 22;}
+        
+        /* Action Buttons */
+        .action-buttons { position: absolute; right: 40px; top: 30px; width: 60px; height: 60px; }
+        .btn { position: absolute; width: 22px; height: 22px; border-radius: 0; background: #0b0f19; border: 1px solid rgba(0,229,255,0.4); box-shadow: 0 0 5px rgba(0,229,255,0.2); display:flex; align-items:center; justify-content:center; font-size: 10px; font-weight:800; color: #00e5ff; font-family: 'Orbitron', sans-serif;}
+        .btn-y { top: 0; left: 19px; border-color: #ff6d00; color: #ff6d00; box-shadow: 0 0 5px rgba(255,109,0,0.2); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);}
+        .btn-x { top: 19px; left: 0; border-color: #00e5ff; color: #00e5ff; box-shadow: 0 0 5px rgba(0,229,255,0.2); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);}
+        .btn-b { top: 19px; left: 38px; border-color: #ff4081; color: #ff4081; box-shadow: 0 0 5px rgba(255,64,129,0.2); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);}
+        .btn-a { top: 38px; left: 19px; border-color: #00e75a; color: #00e75a; box-shadow: 0 0 5px rgba(0,231,90,0.2); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);}
+        
+        /* Action buttons for IR / LED */
+        .action-btn { 
+            background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(0, 229, 255, 0.3); 
+            color: #00e5ff; font-family: 'Orbitron', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px;
+            padding: 8px 10px; cursor: pointer; flex: 1; transition: all 0.2s;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+            text-shadow: 0 0 5px rgba(0,229,255,0.4);
+            position: relative;
+        }
+        .action-btn:hover { background: rgba(0, 229, 255, 0.1); box-shadow: 0 0 15px rgba(0, 229, 255, 0.2); }
+        .action-btn.active { 
+            background: rgba(0, 229, 255, 0.2); color: #fff; text-shadow: 0 0 10px #fff;
+            border: 1px solid #00e5ff; box-shadow: inset 0 0 20px rgba(0,229,255,0.5), 0 0 15px rgba(0,229,255,0.6);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <header>
+            <h1>HVAC <span>CRAWLER</span></h1>
+            
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <!-- Telemetry Badges -->
+                <div class="status-badge" style="border-color: rgba(255, 109, 0, 0.4); box-shadow: 0 0 10px rgba(255, 109, 0, 0.2); gap: 8px;">
+                    <svg width="30" height="14" viewBox="0 0 30 14" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="0" y="0" width="27" height="14" rx="2" fill="none" stroke="#ff6d00" stroke-width="1.5"/>
+                        <rect x="27" y="3" width="3" height="8" fill="#ff6d00"/>
+                        <rect id="battery-fill" x="2" y="2.5" width="23" height="9" fill="#ff6d00" rx="1" style="transition: width 0.3s;"/>
+                        <!-- Lightning bolt for charging/active overlay (optional) -->
+                        <polygon points="15,3 9,9 13.5,9 13,11.5 19,5.5 14.5,5.5" fill="#fff" opacity="0.8"/>
+                    </svg>
+                    <span id="telemetry-battery" style="color: #fff; text-shadow: 0 0 8px #fff; min-width: 48px; text-align: right;">--.- V</span>
+                </div>
+                
+                <div class="status-badge" style="border-color: rgba(0, 231, 90, 0.4); box-shadow: 0 0 10px rgba(0, 231, 90, 0.2); gap: 8px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00e75a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path id="wifi-arc-3" d="M1.42 9a16 16 0 0 1 21.16 0" opacity="0.2" style="transition: opacity 0.3s;"/>
+                        <path id="wifi-arc-2" d="M5 12.55a11 11 0 0 1 14.08 0" opacity="0.2" style="transition: opacity 0.3s;"/>
+                        <path id="wifi-arc-1" d="M8.53 16.11a6 6 0 0 1 6.95 0" opacity="0.2" style="transition: opacity 0.3s;"/>
+                        <circle id="wifi-arc-0" cx="12" cy="20" r="1.5" fill="#00e75a" opacity="0.2" stroke="none" style="transition: opacity 0.3s;"/>
+                    </svg>
+                    <span id="telemetry-wifi" style="color: #fff; text-shadow: 0 0 8px #fff; min-width: 60px; text-align: right;">-- dBm</span>
+                </div>
+
+                <div class="status-badge">
+                    <div id="conn-status" class="status-dot"></div>
+                    <span id="status-text">Disconnected</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="panel main-panel">
+            <h2>Live Camera Feed</h2>
+            <div class="video-container">
+                <div class="no-signal">NO SIGNAL</div>
+                <img id="camera-img" src="" alt="Live Video" />
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; justify-content: center;">
+                <button id="btn-zoom-in" class="action-btn" style="flex: 1; min-width: 20%;">
+                    ZOOM IN
+                    <div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 5px; font-weight: normal; letter-spacing: 1px;">[D-PAD UP]</div>
+                </button>
+                <button id="btn-zoom-out" class="action-btn" style="flex: 1; min-width: 20%;">
+                    ZOOM OUT
+                    <div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 5px; font-weight: normal; letter-spacing: 1px;">[D-PAD DN]</div>
+                </button>
+                <button id="btn-optical" class="action-btn" style="flex: 1; min-width: 20%;">
+                    OPTICAL 1X
+                    <div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 5px; font-weight: normal; letter-spacing: 1px;">[BTN B]</div>
+                </button>
+                <button id="btn-ai" class="action-btn active" style="flex: 1; min-width: 20%;">
+                    AI TRACKING
+                    <div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 5px; font-weight: normal; letter-spacing: 1px;">[CLICK TO TOGGLE]</div>
+                </button>
+                <button id="btn-speed" class="action-btn active" style="flex: 1; min-width: 20%; border-color: #ff6d00; color: #ff6d00;">
+                    SPEED: FAST
+                    <div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 5px; font-weight: normal; letter-spacing: 1px;">[D-PAD RIGHT]</div>
+                </button>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="panel sidebar-panel" style="margin-bottom: 5px;">
+                <h2>Vehicle Functions</h2>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button id="btn-ir" class="action-btn" style="flex: 1; min-width: 30%;">
+                        GREYSCALE
+                        <div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 5px; font-weight: normal; letter-spacing: 1px;">[BTN X]</div>
+                    </button>
+                    <button id="btn-led" class="action-btn" style="flex: 1; min-width: 30%;">
+                        HEADLIGHTS
+                        <div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 5px; font-weight: normal; letter-spacing: 1px;">[BTN Y]</div>
+                    </button>
+                    <button id="btn-hdr" class="action-btn" style="flex: 1; min-width: 30%;">
+                        HDR MODE
+                        <div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 5px; font-weight: normal; letter-spacing: 1px;">[BTN A]</div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="panel sidebar-panel" style="flex: 1; min-height: 150px; display: flex; flex-direction: column;">
+                <h2>Crawler Telemetry</h2>
+                
+                <div class="telemetry-row">
+                    <span>Left Treads:</span>
+                    <span id="motor-left">0</span>
+                </div>
+                <div class="telemetry-row">
+                    <span>Right Treads:</span>
+                    <span id="motor-right">0</span>
+                </div>
+                <div class="telemetry-row accent">
+                    <span>Boom Hook:</span>
+                    <span id="motor-hook">0</span>
+                </div>
+                
+                <div class="visualizer-container" id="visualizer">
+                    <!-- 2D Animated SVG Graphics -->
+                    <svg viewBox="0 0 200 250" class="crawler-svg" id="crawler-graphic" style="--left-speed: 0s; --left-dir: normal; --right-speed: 0s; --right-dir: normal; --hook-rotation: 0deg;">
+                        <defs>
+                            <linearGradient id="tread-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#000" />
+                                <stop offset="10%" stop-color="rgba(0,0,0,0)" />
+                                <stop offset="90%" stop-color="rgba(0,0,0,0)" />
+                                <stop offset="100%" stop-color="#000" />
+                            </linearGradient>
+                            <linearGradient id="boom-metal" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#334155" />
+                                <stop offset="50%" stop-color="#475569" />
+                                <stop offset="100%" stop-color="#1e293b" />
+                            </linearGradient>
+                        </defs>
+                        
+                        <!-- Tracks -->
+                        <g class="track left-track">
+                            <rect x="10" y="20" width="35" height="210" rx="4" fill="#111" stroke="#00e5ff" stroke-width="1.5" filter="drop-shadow(0 0 5px rgba(0,229,255,0.4))"/>
+                            <g class="arrows-container" style="clip-path: inset(0 0 0 0 round 4px);">
+                                <g style="transform-origin: 27.5px 125px; transform: scaleY(var(--left-flip, 1)); transition: transform 0.1s;">
+                                    <g id="anim-left" style="animation: scrollTrack var(--left-speed, 0s) linear infinite; transform-origin: center;">
+                                        <path d="M17.5,10 L27.5,-5 L37.5,10" class="cascade-arrow lit"/>
+                                        <path d="M17.5,40 L27.5,25 L37.5,40" class="cascade-arrow lit"/>
+                                        <path d="M17.5,70 L27.5,55 L37.5,70" class="cascade-arrow lit"/>
+                                        <path d="M17.5,100 L27.5,85 L37.5,100" class="cascade-arrow lit"/>
+                                        <path d="M17.5,130 L27.5,115 L37.5,130" class="cascade-arrow lit"/>
+                                        <path d="M17.5,160 L27.5,145 L37.5,160" class="cascade-arrow lit"/>
+                                        <path d="M17.5,190 L27.5,175 L37.5,190" class="cascade-arrow lit"/>
+                                        <path d="M17.5,220 L27.5,205 L37.5,220" class="cascade-arrow lit"/>
+                                        <path d="M17.5,250 L27.5,235 L37.5,250" class="cascade-arrow lit"/>
+                                        <path d="M17.5,280 L27.5,265 L37.5,280" class="cascade-arrow lit"/>
+                                    </g>
+                                </g>
+                            </g>
+                            <rect x="10" y="20" width="35" height="210" rx="4" fill="url(#tread-gradient)" pointer-events="none" />
+                        </g>
+                        
+                        <g class="track right-track">
+                            <rect x="155" y="20" width="35" height="210" rx="4" fill="#111" stroke="#00e5ff" stroke-width="1.5" filter="drop-shadow(0 0 5px rgba(0,229,255,0.4))"/>
+                            <g class="arrows-container" style="clip-path: inset(0 0 0 0 round 4px);">
+                                <g style="transform-origin: 172.5px 125px; transform: scaleY(var(--right-flip, 1)); transition: transform 0.1s;">
+                                    <g id="anim-right" style="animation: scrollTrack var(--right-speed, 0s) linear infinite; transform-origin: center;">
+                                        <path d="M162.5,10 L172.5,-5 L182.5,10" class="cascade-arrow lit"/>
+                                        <path d="M162.5,40 L172.5,25 L182.5,40" class="cascade-arrow lit"/>
+                                        <path d="M162.5,70 L172.5,55 L182.5,70" class="cascade-arrow lit"/>
+                                        <path d="M162.5,100 L172.5,85 L182.5,100" class="cascade-arrow lit"/>
+                                        <path d="M162.5,130 L172.5,115 L182.5,130" class="cascade-arrow lit"/>
+                                        <path d="M162.5,160 L172.5,145 L182.5,160" class="cascade-arrow lit"/>
+                                        <path d="M162.5,190 L172.5,175 L182.5,190" class="cascade-arrow lit"/>
+                                        <path d="M162.5,220 L172.5,205 L182.5,220" class="cascade-arrow lit"/>
+                                        <path d="M162.5,250 L172.5,235 L182.5,250" class="cascade-arrow lit"/>
+                                        <path d="M162.5,280 L172.5,265 L182.5,280" class="cascade-arrow lit"/>
+                                    </g>
+                                </g>
+                            </g>
+                            <rect x="155" y="20" width="35" height="210" rx="4" fill="url(#tread-gradient)" pointer-events="none" />
+                        </g>
+
+                        <!-- Translucent Main Chassis -->
+                        <g class="chassis-group">
+                            <rect x="40" y="45" width="120" height="160" rx="4" class="chassis"/>
+                            <rect x="45" y="50" width="110" height="150" class="chassis-inner"/>
+                            <rect x="75" y="90" width="50" height="70" rx="2" class="core-glow"/>
+                            <circle cx="100" cy="125" r="4" class="core-pulse"/>
+                        </g>
+
+                        <!-- Hook Turret Pivot Base -->
+                        <g id="boom-hook-group" style="transform-origin: 100px 35px; transform: rotate(var(--hook-rotation));">
+                            <circle cx="100" cy="35" r="25" class="boom-base"/>
+                            <circle cx="100" cy="35" r="15" fill="#1e293b" stroke="#00e5ff" stroke-width="1"/>
+                            <rect x="85" y="5" width="30" height="15" rx="3" fill="#111" stroke="#00e5ff" stroke-width="2"/>
+                            <circle cx="100" cy="12" r="5" fill="#00e5ff" filter="drop-shadow(0 0 5px #00e5ff)"/>
+                            
+                            <!-- Static Arm Base -->
+                            <path d="M120,30 L150,15 L155,25 L125,40 Z" class="boom-arm"/>
+                            
+                            <!-- Rotatable Drill Head -->
+                            <g class="hook-head" style="transform-origin: 153px 20px;" id="hook-spinner">
+                                <circle cx="153" cy="20" r="15" fill="#111" stroke="#ff6d00" stroke-width="2"/>
+                                <!-- Circular Directional Arrows -->
+                                <path d="M148,10 L153,5 L158,10 M163,25 L168,20 L163,15 M143,30 L138,25 L143,20 M153,35 L148,40 L158,40" stroke="#ff6d00" fill="none" stroke-width="1.5" filter="drop-shadow(0 0 3px #ff6d00)"/>
+                            </g>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="panel" style="flex: 0 1 auto; min-height: 0; padding: 15px;">
+                <h2 style="margin-bottom: 5px;">Gamepad Inputs (<span id="gamepad-status">None</span>)</h2>
+                <div class="gamepad-container-wrap">
+                    <div class="gamepad-visuals">
+                        <!-- Shoulder Buttons (Triggers) above chassis -->
+                        <div class="shoulder-region">
+                            <div class="trigger-container">
+                                <div class="trigger-label">L2: HOOK CCW</div>
+                                <div class="trigger-bar"><div id="trig-l2" class="trigger-fill"></div></div>
+                            </div>
+                            <div class="trigger-container">
+                                <div class="trigger-label">R2: HOOK CW</div>
+                                <div class="trigger-bar"><div id="trig-r2" class="trigger-fill"></div></div>
+                            </div>
+                        </div>
+
+                    <div class="gamepad-chassis">
+                        <div class="chassis-bridge"></div>
+                        
+                        <!-- D-Pad -->
+                        <div class="d-pad">
+                            <div class="d-btn d-up"></div>
+                            <div class="d-btn d-left"></div>
+                            <div class="d-btn d-center"></div>
+                            <div class="d-btn d-right"></div>
+                            <div class="d-btn d-down"></div>
+                        </div>
+
+                        <!-- Sticks -->
+                        <div class="stick-container">
+                            <div class="stick-bg">
+                                <div id="stick-L" class="stick-thumb"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="stick-container">
+                            <div class="stick-bg">
+                                <div id="stick-R" class="stick-thumb"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <div class="btn btn-y" title="Toggle Headlights">Y</div>
+                            <div class="btn btn-x" title="Toggle Greyscale">X</div>
+                            <div class="btn btn-b">B</div>
+                            <div class="btn btn-a">A</div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            console.log('[Global Error]', msg, url, lineNo, columnNo, error);
+            return false;
+        };
+        window.addEventListener('unhandledrejection', function(event) {
+            console.log('[Unhandled Rejection]', event.reason);
+        });
+    </script>
+    <script type="module" src="renderer.js"></script>
+</body>
+</html>

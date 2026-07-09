@@ -1,0 +1,40 @@
+{
+  "name": "terratrack-s3-dashboard",
+  "version": "1.0.0",
+  "description": "Dashboard controller for the TerraTrack-S3 robotics platform",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.terratrack.s3.dashboard",
+    "productName": "TerraTrack-S3 Dashboard",
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^41.0.2",
+    "electron-builder": "^26.8.1",
+    "png-to-ico": "^3.0.1"
+  },
+  "dependencies": {
+    "electron-log": "^5.4.3"
+  }
+}

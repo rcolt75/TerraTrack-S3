@@ -1,51 +1,98 @@
-# HVAC Crawler
+# TerraTrack-S3: Modular, Low-Profile Tracked Autonomous Robotics Platform
 
-A comprehensive hardware/software control system for an HVAC inspection crawler robot. 
+TerraTrack-S3 is a production-grade, modular, low-profile tracked robotics platform designed for inspection, mapping, and sensor deployment in challenging internal spaces (such as HVAC ductwork, structural crawl spaces, and industrial piping).
 
-This project bridges a **Raspberry Pi 5** backend (which handles camera streaming and hardware communication) with a **desktop Electron App** frontend (which provides a sci-fi inspired dashboard, gamepad mapping, and live video telemetry).
+The system implements a decoupled double-controller architecture, separating high-level perception, network gateway, and AI processing from low-level real-time actuation.
 
-![Crawler Dashboard](src/controller/banana_crawler.png)
+![Dashboard Preview](ui/banana_crawler.png)
 
-## System Architecture
+---
 
-The crawler ecosystem consists of three main components:
+## 1. System Architecture
 
-1. **Frontend (Electron App)**: Written in Node.js, HTML, and CSS. It connects to the local OS Gamepad API, maps joystick and trigger inputs, and renders a translucent, glassmorphic 2D visualization of the robot's real-time state.
-2. **Backend (Raspberry Pi 5)**: Written in Python. It manages a TCP socket server to receive UDP stream configurations and motor/servo coordinates from the frontend. It interfaces directly with an Arducam Mini over SPI (using `libcamera`/`rpicam-vid`).
-3. **Hardware Controllers (ESP32)**: The Pi relays UART byte packets to an ESP32, which physically commands 4 individual wheel motors (via motor drivers), a continuous rotation boom hook servo, and an LED headlight array.
+The robot's software and hardware layers are split into three primary tiers:
 
-## Features
-- **Independent 4-Wheel Drive**: Tank-drive telemetry is calculated locally and transmitted flawlessly.
-- **Hook Servo Integration**: L2 and R2 analog gamepad triggers map to a proportional PWM crawler boom hook.
-- **Low-Latency UDP Video**: Directly pipes the `rpicam-vid` raw MJPEG bitstream over UDP to the Electron `<canvas>`, effectively averting HTTP buffering delays.
-- **Greyscale / IR Toggle**: The "X" button gracefully halts the camera pipeline and re-instantiates it with `--saturation 0.0` and `--awb grey` tuning for NoIR nocturnal navigation.
-- **Animated 2D Telemetry**: Tread arrows and a hook dial physically animate on the dashboard cascading proportionally based on the joystick speed array.
+```
+[ Electron UI Dashboard ] <=======(TCP/IP LAN)=======> [ Raspberry Pi 5 Gateway ]
+                                                              ||
+                                                        (115200 Baud UART)
+                                                              ||
+                                                              v
+                                                      [ ESP32-S3 Actuator Node ]
+```
 
-## Repository Layout
-- `/src/pi/`: Contains the Raspberry Pi Python socket server (`server.py`), UART bridge (`motors.py`), and camera subprocess driver (`stream.py`).
-- `/src/controller/`: Contains the Electron framework.
-  - `main.js`: Bootstraps the Node environment and TCP connection block.
-  - `renderer.js`: Executes the Gamepad API polling loop and manipulates the UI Document Object Model (DOM) at 60 FPS.
-  - `index.html`: Deep-abyss dark theme markup UI.
-- `ESP32_Configuration_Guide.md`: Details the 13-byte UART payload schema required for the ESP32.
+1. **Frontend (Electron UI Dashboard)**:
+   A translucent, glassmorphic dark-themed desktop application. It monitors local USB controllers via the Gamepad API, performs scaling and deadzone calculations, streams real-time coordinate targets, and renders telemetry and low-latency video.
+2. **Gateway (Raspberry Pi 5)**:
+   The primary processing core of the crawler. It hosts a TCP command server, processes IMX477 camera feeds using hardware-accelerated pipelines, controls local hardware PWM aux servos, and bridges client commands over serial.
+3. **Actuator Node (ESP32-S3)**:
+   A dedicated real-time micro-controller. It ingests the JSON-based command stream from the Pi to drive four independent direct-drive hub motors (DDSM400), switch auxiliary payloads, and return battery telemetry.
 
-## Installation & Usage
+---
 
-### 1. Raspberry Pi Backend
-1. Clone this repository to your Pi 5.
-2. Enable UART, I2C, and SPI interfaces via `sudo raspi-config`.
-3. Set up the Python systemd service (see `/scripts/hvac-crawler.service`).
-4. Start the service: `sudo systemctl start hvac-crawler`
+## 2. Directory Structure
 
-### 2. Desktop Frontend (Windows/macOS/Linux)
-1. Ensure Node.js and NPM are installed.
-2. Open a terminal and navigate to the controller directory: `cd src/controller`
-3. Install electron dependencies: `npm install`
-4. Launch the dashboard: `npm start`
-5. *Note: Ensure your PC is on the same local network subnet as the Raspberry Pi (default IP: 10.250.2.247).*
+The repository is organized according to the **TerraTrack-S3 Branding Blueprint**:
 
-### 3. ESP32 Payload Configuration
-Refer to the `ESP32_Configuration_Guide.md` located in the project root for instructions on compiling your ESP32 Arduino C++ firmware to ingest the Raspberry Pi's `0xAA` start-byte communication protocol.
+```
+terratrack-s3/
+├── docs/                      # Comprehensive technical documentation
+│   ├── heterogeneous_protocol.md  # Detailed network and serial payloads
+│   ├── bill_of_materials.md   # Hardware list and physical wiring guides
+│   └── bench_testing_journal.md # Test records, calibration logs, and fixes
+├── firmware/                  # ESP32-S3 real-time actuator source
+│   ├── Cobra_Driver/          # Main Arduino/ESP-IDF source code
+│   ├── libraries/             # Vendor driver dependencies (SCServo)
+│   └── platformio.ini         # PlatformIO project configuration
+├── gateway/                   # Raspberry Pi 5 Python application
+│   ├── src/                   # Python servers, serial drivers, and camera streams
+│   ├── imx500_models/         # Pre-compiled AI tracking weights
+│   └── scripts/               # Linux service configuration & setup scripts
+├── ui/                        # Electron desktop dashboard
+│   ├── main.js                # App bootstrap & TCP network interface
+│   ├── renderer.js            # Gamepad polling, DOM animation & canvas rendering
+│   └── package.json           # Node configuration and dependencies
+└── package.json               # Root workspace build and launch scripts
+```
+
+---
+
+## 3. Quick Start
+
+### 3.1 Gateway Setup (Raspberry Pi 5)
+1. Ensure Raspberry Pi OS (64-bit Bookworm Lite) is installed.
+2. Enable interfaces (UART, SPI, I2C) via `sudo raspi-config`.
+3. Run the setup script to install dependencies:
+   ```bash
+   sudo chmod +x gateway/scripts/setup_pi.sh
+   ./gateway/scripts/setup_pi.sh
+   ```
+4. Enable and start the systemd daemon for automatic startup:
+   ```bash
+   sudo cp gateway/scripts/hvac-crawler.service /etc/systemd/system/
+   sudo systemctl daemon-reload
+   sudo systemctl enable hvac-crawler.service
+   sudo systemctl start hvac-crawler.service
+   ```
+
+### 3.2 Dashboard Startup (Local PC)
+1. Ensure Node.js (v18+) is installed.
+2. From the repository root, install dependencies and run:
+   ```bash
+   npm install
+   npm start
+   ```
+3. Ensure your control PC is on the same local subnet as the robot (Default Gateway IP: `10.250.2.247`).
+
+---
+
+## 4. Hardware and Protocols
+* **Serial Link**: UART @ 115200 baud (8N1).
+* **Communication Standard**: Waveshare UGV JSON-based Serial API.
+* **Camera Stream**: TCP MJPEG stream on port `5006` with custom big-endian length headers.
+* Detailed specifications can be found under the [docs/](docs/) folder.
+
+---
 
 ## License
-MIT License
+This project is licensed under the MIT License - see the LICENSE file for details.
