@@ -96,5 +96,24 @@ terratrack-s3/
 
 ---
 
+## 5. Hardware Reference & Datasheets
+To assist in ongoing hardware debugging, customization, and expansion, refer to the following official resources and datasheets:
+
+*   **Chassis & Motors**:
+    *   [Waveshare Cobra Flex Wiki](https://www.waveshare.com/wiki/Cobra_Flex) — Complete chassis dimensions, suspension schematics, and mechanical profiles.
+    *   [Waveshare DDSM400 Motor Wiki](https://www.waveshare.com/wiki/DDSM400) — Direct-drive motor registers, LIN communication, and command syntax.
+*   **Controller Board & Telemetry**:
+    *   [Waveshare ESP32-S3 UGV Driver Board Wiki](https://www.waveshare.com/wiki/ESP32_S3_Driver_Board) — Pinout layouts, voltage isolation, and board SDK.
+    *   [Waveshare UGV Host SDK Repository (GitHub)](https://github.com/waveshareteam/ugv_rpi) — Reference python integrations for host compute nodes.
+    *   [Adafruit INA219 Telemetry Guide](https://learn.adafruit.com/adafruit-ina219-current-sensor-breakout) — Battery monitoring scale calculation and specifications.
+*   **Sensory & Compute Nodes**:
+    *   [Raspberry Pi 5 Product Documentation](https://www.raspberrypi.com/products/raspberry-pi-5/) — Gateway processing unit specs.
+    *   [Arducam IMX477 Camera Solutions](https://docs.arducam.com/raspberry-pi/camera-solutions/sony-imx477-12-3mp-camera/) — libcamera configuration guides for the HD NoIR camera sensor.
+    *   [Google Coral Edge TPU USB Accelerator](https://coral.ai/products/accelerator/) — Object detection models runtime environment setup.
+*   **Libraries**:
+    *   [Waveshare SCServo Library Repository (GitHub)](https://github.com/waveshareteam/SCServo) — Low-level continuous rotation servo bus driver.
+
+---
+
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
