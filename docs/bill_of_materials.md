@@ -31,6 +31,12 @@ This document lists the components, hardware specifications, and wiring diagrams
 | **DC-DC Buck Converter** | 12V to 5V 5A USB-C Step-Down | 1 | 5A Buck regulator | Safe, high-amperage power supply for the Raspberry Pi 5. |
 | **INA219 WE Sensor** | I2C High-side current/voltage monitor | 1 | Integrated on UGV board | Real-time battery telemetry monitoring. |
 
+### 1.4 Chassis & Mechanical Framework
+| Component | Description | Qty | Part Number / Source | Purpose |
+|---|---|---|---|---|
+| **Waveshare Cobra Flex Chassis** | 4WD tracked independent suspension drive-by-wire chassis | 1 | Waveshare Cobra Flex | Provides physical structure, track drives, suspension, and internal payload compartments. |
+| **1020 Aluminum Rails** | 1020 European standard aluminum extrusion profiles | 2 | Integrated on Chassis | Rigid mounting points for the camera, sensor modules, and electronics bay. |
+
 ---
 
 ## 2. Wiring & Pinout Architecture

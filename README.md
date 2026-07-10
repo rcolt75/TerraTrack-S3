@@ -2,7 +2,7 @@
 
 TerraTrack-S3 is a production-grade, modular, low-profile tracked robotics platform designed for inspection, mapping, and sensor deployment in challenging internal spaces (such as HVAC ductwork, structural crawl spaces, and industrial piping).
 
-The system implements a decoupled double-controller architecture, separating high-level perception, network gateway, and AI processing from low-level real-time actuation.
+The system is physically built upon the **Waveshare Cobra Flex** rover chassis—a robust, drive-by-wire 4WD tracked platform featuring CNC-machined independent suspension and an integrated 1020 aluminum extrusion rail system. The software architecture implements a decoupled double-controller configuration, separating high-level perception, network gateway, and AI processing from low-level real-time actuation.
 
 ![Dashboard Preview](ui/banana_crawler.png)
 
@@ -87,7 +87,9 @@ terratrack-s3/
 ---
 
 ## 4. Hardware and Protocols
-* **Serial Link**: UART @ 115200 baud (8N1).
+* **Physical Chassis**: Waveshare Cobra Flex 4WD tracked independent suspension rover.
+* **Actuators**: 4x DDSM400 direct-drive FOC brushless hub motors, continuous rotation payload servo.
+* **Serial Link**: UART @ 115200 baud (8N1) between Raspberry Pi 5 and ESP32-S3.
 * **Communication Standard**: Waveshare UGV JSON-based Serial API.
 * **Camera Stream**: TCP MJPEG stream on port `5006` with custom big-endian length headers.
 * Detailed specifications can be found under the [docs/](docs/) folder.
