@@ -255,7 +255,6 @@ if(btnIr) {
     });
 }
 
-const btnLed = document.getElementById('btn-led');
 if(btnLed) {
     btnLed.addEventListener('click', () => {
         if (!isPiConnected) return;
@@ -273,7 +272,6 @@ if(btnLed) {
     });
 }
 
-const btnHdr = document.getElementById('btn-hdr');
 if(btnHdr) {
     btnHdr.addEventListener('click', () => {
         if (!isPiConnected) return;
@@ -283,7 +281,6 @@ if(btnHdr) {
     });
 }
 
-const btnOptical = document.getElementById('btn-optical');
 if(btnOptical) {
     btnOptical.addEventListener('click', () => {
         if (!isPiConnected) return;
@@ -295,7 +292,6 @@ if(btnOptical) {
     });
 }
 
-const btnAi = document.getElementById('btn-ai');
 if(btnAi) {
     btnAi.addEventListener('click', () => {
         if (!isPiConnected) return;
@@ -305,17 +301,14 @@ if(btnAi) {
     });
 }
 
-const btnZoomIn = document.getElementById('btn-zoom-in');
 if(btnZoomIn) {
     btnZoomIn.addEventListener('click', () => { currentZoom = Math.min(currentZoom + 0.5, 4.0); });
 }
 
-const btnZoomOut = document.getElementById('btn-zoom-out');
 if(btnZoomOut) {
     btnZoomOut.addEventListener('click', () => { currentZoom = Math.max(currentZoom - 0.5, 1.0); });
 }
 
-const btnSpeed = document.getElementById('btn-speed');
 if(btnSpeed) {
     btnSpeed.addEventListener('click', () => {
         if (!isPiConnected) return;
