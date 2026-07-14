@@ -37,7 +37,13 @@ This document lists the components, hardware specifications, and wiring diagrams
 | **Waveshare Cobra Flex Chassis** | 4WD tracked independent suspension drive-by-wire chassis | 1 | Waveshare Cobra Flex | Provides physical structure, track drives, suspension, and internal payload compartments. |
 | **1020 Aluminum Rails** | 1020 European standard aluminum extrusion profiles | 2 | Integrated on Chassis | Rigid mounting points for the camera, sensor modules, and electronics bay. |
 
----
+### 1.5 Networking Infrastructure
+| Component | Description | Qty | Part Number / Source | Purpose |
+|---|---|---|---|---|
+| **ALFA AWUS036ACM** | Dual-band (2.4/5GHz) USB 3.0 WiFi adapter (MT7612U chipset) | 1 | [ALFA Network](https://www.alfa.com.tw/) | Control station wireless link to TerraTrack-Net; high-gain antenna ensures reliable connectivity at range. |
+| **GL.iNet GL-AR300M** | Compact travel router (2.4GHz, OpenWrt-based) | 1 | [GL.iNet](https://www.gl-inet.com/products/gl-ar300m/) | Dedicated wireless bridge creating isolated `10.250.2.0/24` subnet between control station and crawler. |
+
+> **📎 Setup Reference**: See [Network Setup Guide](network_setup_guide.md) for complete configuration instructions, static IP assignments, and troubleshooting.
 
 ## 2. Wiring & Pinout Architecture
 

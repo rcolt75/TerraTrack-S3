@@ -81,6 +81,32 @@
         .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-danger); animation: livePulse 1.5s ease-in-out infinite; }
         @keyframes livePulse { 0%,100% { opacity: 1; box-shadow: 0 0 4px var(--color-danger); } 50% { opacity: 0.4; box-shadow: 0 0 12px var(--color-danger); } }
         
+        /* Battery critical pulse animation (<15%) */
+        @keyframes batteryCritical {
+            0%,100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .battery-critical { animation: batteryCritical 0.8s ease-in-out infinite; }
+        
+        /* Header badge container */
+        .header-badges { display: flex; gap: 15px; align-items: center; }
+        
+        /* Typed badge variants */
+        .badge-battery { border-color: rgba(255, 109, 0, 0.4); box-shadow: 0 0 10px rgba(255, 109, 0, 0.2); gap: 8px; transition: border-color 0.4s, box-shadow 0.4s; }
+        .badge-wifi { border-color: rgba(0, 231, 90, 0.4); box-shadow: 0 0 10px rgba(0, 231, 90, 0.2); gap: 8px; }
+        .badge-connection { gap: 8px; }
+        
+        /* Telemetry row update shimmer */
+        @keyframes telemetryFlash {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .telemetry-row.flash {
+            background-image: linear-gradient(90deg, transparent 0%, rgba(0,229,255,0.08) 50%, transparent 100%);
+            background-size: 200% 100%;
+            animation: telemetryFlash 0.6s ease-out;
+        }
+        
         /* Button container layout classes */
         .btn-row { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; justify-content: center; }
         .btn-row .action-btn { flex: 1; min-width: 20%; }
@@ -324,12 +350,12 @@
                 <span class="version-badge">v1.0.0</span>
             </div>
             
-            <div style="display: flex; gap: 15px; align-items: center;">
+            <div class="header-badges">
                 <!-- Telemetry Badges -->
-                <div class="status-badge" style="border-color: rgba(255, 109, 0, 0.4); box-shadow: 0 0 10px rgba(255, 109, 0, 0.2); gap: 8px;">
-                    <svg width="30" height="14" viewBox="0 0 30 14" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="0" y="0" width="27" height="14" rx="2" fill="none" stroke="#ff6d00" stroke-width="1.5"/>
-                        <rect x="27" y="3" width="3" height="8" fill="#ff6d00"/>
+                <div id="badge-battery" class="status-badge badge-battery">
+                    <svg id="battery-svg" width="30" height="14" viewBox="0 0 30 14" xmlns="http://www.w3.org/2000/svg">
+                        <rect id="battery-outline" x="0" y="0" width="27" height="14" rx="2" fill="none" stroke="#ff6d00" stroke-width="1.5"/>
+                        <rect id="battery-cap" x="27" y="3" width="3" height="8" fill="#ff6d00"/>
                         <rect id="battery-fill" x="2" y="2.5" width="23" height="9" fill="#ff6d00" rx="1" style="transition: width 0.3s;"/>
                         <!-- Lightning bolt for charging/active overlay (optional) -->
                         <polygon points="15,3 9,9 13.5,9 13,11.5 19,5.5 14.5,5.5" fill="#fff" opacity="0.8"/>
@@ -337,7 +363,7 @@
                     <span id="telemetry-battery" style="color: #fff; text-shadow: 0 0 8px #fff; min-width: 48px; text-align: right;">--.- V</span>
                 </div>
                 
-                <div class="status-badge" style="border-color: rgba(0, 231, 90, 0.4); box-shadow: 0 0 10px rgba(0, 231, 90, 0.2); gap: 8px;">
+                <div class="status-badge badge-wifi">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00e75a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <path id="wifi-arc-3" d="M1.42 9a16 16 0 0 1 21.16 0" opacity="0.2" style="transition: opacity 0.3s;"/>
                         <path id="wifi-arc-2" d="M5 12.55a11 11 0 0 1 14.08 0" opacity="0.2" style="transition: opacity 0.3s;"/>
@@ -347,7 +373,7 @@
                     <span id="telemetry-wifi" style="color: #fff; text-shadow: 0 0 8px #fff; min-width: 60px; text-align: right;">-- dBm</span>
                 </div>
 
-                <div class="status-badge">
+                <div class="status-badge badge-connection">
                     <div id="conn-status" class="status-dot"></div>
                     <span id="status-text">Disconnected</span>
                 </div>

@@ -124,10 +124,43 @@ window.crawlerAPI.onTelemetry((data) => {
         let maxWidth = 23;
         batteryFill.setAttribute('width', (pct * maxWidth).toFixed(1));
         
-        // Color transition logic explicitly updating the fill style
-        if (pct <= 0.15) batteryFill.setAttribute('fill', '#ff003c'); // Red critical alert under 11.2V
-        else if (pct <= 0.35) batteryFill.setAttribute('fill', '#ffea00'); // Yellow warning under 11.4V
-        else batteryFill.setAttribute('fill', '#ff6d00'); // Orange default
+        // ─── 4-Tier Dynamic Battery Color System ───
+        // Propagates color to: SVG fill, SVG stroke (outline + cap), badge border, badge glow, and text shadow
+        let batteryColor;
+        if (pct > 0.60)       batteryColor = '#00e75a'; // Green — healthy
+        else if (pct > 0.30)  batteryColor = '#ff6d00'; // Orange — moderate
+        else if (pct > 0.15)  batteryColor = '#ffea00'; // Yellow — warning
+        else                  batteryColor = '#ff003c'; // Red — critical (<15%)
+
+        // SVG fill bar
+        batteryFill.setAttribute('fill', batteryColor);
+
+        // SVG outline stroke and battery cap
+        const batteryOutline = document.getElementById('battery-outline');
+        const batteryCap = document.getElementById('battery-cap');
+        if (batteryOutline) batteryOutline.setAttribute('stroke', batteryColor);
+        if (batteryCap) batteryCap.setAttribute('fill', batteryColor);
+
+        // Badge border and glow
+        const badgeBattery = document.getElementById('badge-battery');
+        if (badgeBattery) {
+            const rgbaColor = batteryColor.replace('#', '');
+            const r = parseInt(rgbaColor.substring(0, 2), 16);
+            const g = parseInt(rgbaColor.substring(2, 4), 16);
+            const b = parseInt(rgbaColor.substring(4, 6), 16);
+            badgeBattery.style.borderColor = `rgba(${r}, ${g}, ${b}, 0.5)`;
+            badgeBattery.style.boxShadow = `0 0 12px rgba(${r}, ${g}, ${b}, 0.3)`;
+
+            // Critical pulse animation toggle
+            if (pct <= 0.15) {
+                badgeBattery.classList.add('battery-critical');
+            } else {
+                badgeBattery.classList.remove('battery-critical');
+            }
+        }
+
+        // Text glow matches battery state
+        telemetryBattery.style.textShadow = `0 0 8px ${batteryColor}`;
     }
     
     if (data.wifi !== undefined) {

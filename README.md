@@ -39,7 +39,8 @@ terratrack-s3/
 ├── docs/                      # Comprehensive technical documentation
 │   ├── heterogeneous_protocol.md  # Detailed network and serial payloads
 │   ├── bill_of_materials.md   # Hardware list and physical wiring guides
-│   └── bench_testing_journal.md # Test records, calibration logs, and fixes
+│   ├── bench_testing_journal.md # Test records, calibration logs, and fixes
+│   └── network_setup_guide.md # ALFA / GL-AR300M wireless bridge configuration
 ├── firmware/                  # ESP32-S3 real-time actuator source
 │   ├── Cobra_Driver/          # Main Arduino/ESP-IDF source code
 │   ├── libraries/             # Vendor driver dependencies (SCServo)
@@ -90,7 +91,15 @@ terratrack-s3/
    npm install
    npm start
    ```
-3. Ensure your control PC is on the same local subnet as the robot (Default Gateway IP: `10.250.2.247`).
+3. Ensure your control PC is on the same local subnet as the robot (Default Gateway IP: `10.250.2.247`). See **Section 3.3** below.
+
+### 3.3 Network Setup (ALFA / GL-AR300M Bridge)
+The TerraTrack-S3 uses a dedicated wireless bridge to isolate robot control traffic:
+1. Configure the **GL.iNet GL-AR300M** travel router with SSID `TerraTrack-Net` on subnet `10.250.2.0/24`.
+2. Connect the **ALFA AWUS036ACM** USB WiFi adapter on the control station to `TerraTrack-Net`.
+3. The Raspberry Pi 5 is statically assigned to `10.250.2.247`.
+4. Detailed configuration, driver setup, and troubleshooting instructions are documented in:
+   📎 **[docs/network_setup_guide.md](docs/network_setup_guide.md)**
 
 ---
 
@@ -100,6 +109,7 @@ terratrack-s3/
 * **Serial Link**: UART @ 115200 baud (8N1) between Raspberry Pi 5 and ESP32-S3.
 * **Communication Standard**: Waveshare UGV JSON-based Serial API.
 * **Camera Stream**: TCP MJPEG stream on port `5006` with custom big-endian length headers.
+* **Networking**: ALFA AWUS036ACM (control station) → GL.iNet GL-AR300M (bridge) → Raspberry Pi 5 on `10.250.2.0/24`.
 * Detailed specifications can be found under the [docs/](docs/) folder.
 
 ---
