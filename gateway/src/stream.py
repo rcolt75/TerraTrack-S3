@@ -5,6 +5,7 @@ import struct
 import threading
 import time
 import subprocess
+import os
 from typing import Optional, Tuple, Any
 
 class CameraStreamer:
@@ -51,7 +52,6 @@ class CameraStreamer:
         ]
         
         if getattr(self, 'ai_mode', True):
-            import os
             script_dir = os.path.dirname(os.path.abspath(__file__))
             json_path = os.path.join(script_dir, "imx500_mobilenet_custom.json")
             cmd.extend([

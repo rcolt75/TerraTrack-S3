@@ -24,7 +24,6 @@ class HVACServer:
         self.client_address = None
         
         self.wifi_thread = threading.Thread(target=self._wifi_poller, daemon=True)
-        self.wifi_thread.start()
 
     def start(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -34,6 +33,7 @@ class HVACServer:
         sock.listen(1)
         self.server_socket = sock
         self.running = True
+        self.wifi_thread.start()
 
         print(f"TerraTrack-S3 Server listening on {self.host}:{self.port}")
 

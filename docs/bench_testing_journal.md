@@ -84,3 +84,17 @@ else:
   - Motor Trim calibration: Right motor speed trim multiplier adjusted to **`1.0`** and Left motor to **`0.92`** to compensate for ~8% hardware pull to the right during straight-line travel.
   - "Crawl" mode velocity multiplier set to **`0.50`** (50% speed).
   - "Fast" mode velocity multiplier boosted to **`0.85`** (85% speed).
+
+---
+
+### Entry 6: Codebase Refactoring & UI Component Extraction
+* **Date**: July 14, 2026
+* **Status**: Complete
+* **Objective**: Refactor the codebase for better performance, UI responsiveness, and maintainability prior to production release.
+* **Problem**: The renderer loop (`renderer.js`) had multiple performance bottlenecks including continuous DOM element lookups and a global scope leak of `batteryEma`. Additionally, the Python network server occasionally failed on startup due to race conditions. The UI lacked professional styling components.
+* **Implementation & Results**:
+  - **JavaScript Optimizations**: Cached all repetitively accessed DOM elements (e.g., `voltageLabel`, `speedDial`) as constant variables at the top of the scope. Localized `batteryEma` inside the script block to prevent global leaks, and extracted magic numbers into a central `CONFIG` object.
+  - **Python Gateway Cleanup**: Moved the `wifi_thread.start()` from `__init__` to the explicit `start()` method in `server.py`, ensuring the server socket is fully bound before accepting network traffic. 
+  - **UI/UX Aesthetics**: Refactored the raw inline HTML into a standalone `styles.css`. Implemented a modular, glassmorphic layout for the dashboard. Updated the battery indicator with dynamic color mapping (e.g., `#00ff00` for healthy, `#ff0000` for low) and a segmented layout.
+  - **Network Documentation**: Formally documented the bridged network architecture utilizing the GL-AR300M and ALFA AWUS036ACM in the `network_setup_guide.md`.
+  - Rebuilt the application using `npm run dist` resulting in a stable, highly optimized Electron package.
