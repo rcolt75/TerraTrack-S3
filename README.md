@@ -4,7 +4,7 @@ TerraTrack-S3 is a production-grade, modular, low-profile tracked robotics platf
 
 The system is physically built upon the **Waveshare Cobra Flex** rover chassis—a robust, drive-by-wire 4WD tracked platform featuring CNC-machined independent suspension and an integrated 1020 aluminum extrusion rail system. The software architecture implements a decoupled double-controller configuration, separating high-level perception, network gateway, and AI processing from low-level real-time actuation.
 
-![Dashboard Preview](ui/banana_crawler.png)
+![Dashboard Preview](ui/dashboard_preview.png)
 
 ---
 
@@ -46,11 +46,13 @@ terratrack-s3/
 │   └── platformio.ini         # PlatformIO project configuration
 ├── gateway/                   # Raspberry Pi 5 Python application
 │   ├── src/                   # Python servers, serial drivers, and camera streams
+│   ├── config/                # Runtime configuration (reserved)
 │   ├── imx500_models/         # Pre-compiled AI tracking weights
 │   └── scripts/               # Linux service configuration & setup scripts
+├── hardware/                  # 3D models, schematics, and mechanical references
 ├── ui/                        # Electron desktop dashboard
 │   ├── main.js                # App bootstrap & TCP network interface
-│   ├── renderer.js            # Gamepad polling, DOM animation & canvas rendering
+│   ├── renderer.js            # Gamepad polling, DOM animation & telemetry rendering
 │   └── package.json           # Node configuration and dependencies
 └── package.json               # Root workspace build and launch scripts
 ```
@@ -77,7 +79,13 @@ terratrack-s3/
 
 ### 3.2 Dashboard Startup (Local PC)
 1. Ensure Node.js (v18+) is installed.
-2. From the repository root, install dependencies and run:
+2. From the `ui/` directory, install dependencies and run:
+   ```bash
+   cd ui
+   npm install
+   npm start
+   ```
+   Or from the repository root (uses workspace scripts):
    ```bash
    npm install
    npm start

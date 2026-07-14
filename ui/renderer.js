@@ -49,6 +49,9 @@ window.crawlerAPI.onConnectionStatus((status) => {
         statusText.innerText = status === 'error' ? 'Connection Error' : 'Disconnected';
         cameraImg.style.display = 'none';
         document.querySelector('.no-signal').style.display = 'block';
+        // Deactivate LIVE badge
+        const liveBadge = document.getElementById('live-badge');
+        if (liveBadge) liveBadge.classList.remove('active');
     }
 });
 
@@ -57,6 +60,10 @@ window.crawlerAPI.onVideoFrame((base64Image) => {
     cameraImg.src = `data:image/jpeg;base64,${base64Image}`;
     cameraImg.style.display = 'block';
     document.querySelector('.no-signal').style.display = 'none';
+    
+    // Activate LIVE badge
+    const liveBadge = document.getElementById('live-badge');
+    if (liveBadge) liveBadge.classList.add('active');
     
     // Update status to reflect streaming
     if (statusText.innerText.includes('Waiting')) {
@@ -147,8 +154,8 @@ window.crawlerAPI.onTelemetry((data) => {
 // Gamepad polling loop
 let lastLeft = 0;
 let lastRight = 0;
-window.lastHook = 0;
-window.lastAux = 0;
+let lastHook = 0;
+let lastAux = 0;
 let irModeActive = false;
 let ledsActive = false;
 let hdrActive = false;
@@ -218,7 +225,7 @@ if(btnOptical) {
         if (!isPiConnected) return;
         currentOptical *= 2;
         if(currentOptical > 4) currentOptical = 1;
-        btnOptical.innerHTML = `OPTICAL ${currentOptical}X<div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 5px; font-weight: normal; letter-spacing: 1px;">[BTN B]</div>`;
+        btnOptical.innerHTML = `OPTICAL ${currentOptical}X<div class="btn-hint">[BTN B]</div>`;
         btnOptical.classList.toggle('active', currentOptical > 1);
         window.crawlerAPI.sendCommand({ action: 'set_roi', level: currentOptical });
     });
@@ -250,16 +257,16 @@ if(btnSpeed) {
         if (!isPiConnected) return;
         if (speedMode === "FAST") {
             speedMode = "CRAWL";
-            btnSpeed.innerHTML = `SPEED: CRAWL<div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 5px; font-weight: normal; letter-spacing: 1px;">[BTN D-RIGHT]</div>`;
+            btnSpeed.innerHTML = `SPEED: CRAWL<div class="btn-hint">[D-PAD RIGHT]</div>`;
             btnSpeed.classList.remove('active');
-            btnSpeed.style.borderColor = '#00e75a';
-            btnSpeed.style.color = '#00e75a';
+            btnSpeed.style.borderColor = 'var(--color-success, #00e75a)';
+            btnSpeed.style.color = 'var(--color-success, #00e75a)';
         } else {
             speedMode = "FAST";
-            btnSpeed.innerHTML = `SPEED: FAST<div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 5px; font-weight: normal; letter-spacing: 1px;">[BTN D-RIGHT]</div>`;
+            btnSpeed.innerHTML = `SPEED: FAST<div class="btn-hint">[D-PAD RIGHT]</div>`;
             btnSpeed.classList.add('active');
-            btnSpeed.style.borderColor = '#ff6d00';
-            btnSpeed.style.color = '#ff6d00';
+            btnSpeed.style.borderColor = 'var(--color-accent, #ff6d00)';
+            btnSpeed.style.color = 'var(--color-accent, #ff6d00)';
         }
     });
 }
@@ -302,8 +309,10 @@ function updateGamepad() {
             rightSpeed = Math.round(applyCurve(normalized) * 255 * RIGHT_TRIM);
         }
 
-        // L2 and R2 triggers for the hook servo (now mapped to auxSpeed on Pi GPIO)
-        let hookSpeed = 0; // Legacy ESP32 hook speed is now unused, send 0
+        // Legacy: hookSpeed is retained at 0 for backwards-compatibility with the
+        // Waveshare UGV serial protocol (T:131). Actual hook control is now on aux_speed
+        // driven by the Raspberry Pi's GPIO PWM servo output.
+        let hookSpeed = 0;
         let auxSpeed = 0;
         
         let l2 = gp.buttons[6] ? gp.buttons[6].value : 0;
@@ -352,11 +361,6 @@ function updateGamepad() {
         // Apply Hardware CSS transform purely onto the img canvas
         cameraImg.style.transform = `scale(${currentZoom})`;
         
-        if (gp.buttons[13] && gp.buttons[13].pressed) {
-            dpadDown.style.background = '#00e5ff'; dpadDown.style.boxShadow = '0 0 10px #00e5ff';
-        } else {
-            dpadDown.style.background = ''; dpadDown.style.boxShadow = '';
-        }
 
         if (gp.buttons[14] && gp.buttons[14].pressed) {
             dpadLeft.style.background = '#00e5ff'; dpadLeft.style.boxShadow = '0 0 10px #00e5ff';
@@ -432,7 +436,7 @@ function updateGamepad() {
         
         // --- SEND COMMANDS ---
         let now = performance.now();
-        let valueChanged = (leftSpeed !== lastLeft || rightSpeed !== lastRight || hookSpeed !== window.lastHook || auxSpeed !== window.lastAux);
+        let valueChanged = (leftSpeed !== lastLeft || rightSpeed !== lastRight || hookSpeed !== lastHook || auxSpeed !== lastAux);
         let shouldSend = valueChanged && (now - lastSendTime > 50);
 
         // Always send immediately if we are commanding a stop to ensure instant braking
@@ -456,8 +460,8 @@ function updateGamepad() {
             }
             lastLeft = leftSpeed;
             lastRight = rightSpeed;
-            window.lastHook = hookSpeed;
-            window.lastAux = auxSpeed;
+            lastHook = hookSpeed;
+            lastAux = auxSpeed;
             lastSendTime = now;
         }
         
@@ -480,7 +484,7 @@ function updateGamepad() {
         trigL2.classList.remove('active');
         trigR2.classList.remove('active');
         
-        if (lastLeft !== 0 || lastRight !== 0 || window.lastHook !== 0 || window.lastAux !== 0) {
+        if (lastLeft !== 0 || lastRight !== 0 || lastHook !== 0 || lastAux !== 0) {
             if (isPiConnected) {
                 window.crawlerAPI.sendCommand({
                      action: 'drive', 
@@ -495,8 +499,8 @@ function updateGamepad() {
             }
             lastLeft = 0;
             lastRight = 0;
-            window.lastHook = 0;
-            window.lastAux = 0;
+            lastHook = 0;
+            lastAux = 0;
         }
     }
     } catch (e) {

@@ -80,7 +80,7 @@ else:
 * **Objective**: Compensate for minor motor traction bias and physical gamepad controller stick drift.
 * **Telemetry Data Log**:
   - Gamepad Idle: Left Joystick `(0.012, -0.008)`, Right Joystick `(-0.015, 0.005)`.
-  - Configured software deadzone threshold: **`0.05`** (5%). Inputs below this value are snapped to `0.0`.
-  - Motor Trim calibration: Right motor speed trim multiplier adjusted to **`1.0`** and Left motor to **`0.96`** to compensate for a slight hardware pulls to the right during straight-line travel.
-  - "Crawl" mode velocity multiplier set to **`0.30`** (30% speed).
+  - Configured software deadzone threshold: **`0.10`** (10%). Inputs below this value are snapped to `0.0`.
+  - Motor Trim calibration: Right motor speed trim multiplier adjusted to **`1.0`** and Left motor to **`0.92`** to compensate for ~8% hardware pull to the right during straight-line travel.
+  - "Crawl" mode velocity multiplier set to **`0.50`** (50% speed).
   - "Fast" mode velocity multiplier boosted to **`0.85`** (85% speed).

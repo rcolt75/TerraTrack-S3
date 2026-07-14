@@ -1,11 +1,11 @@
 $piIP = "10.250.2.247"
 $piUser = "hvac"
-$piDestDir = "~/hvac-crawler/pi"
+$piDestDir = "~/terratrack-s3/gateway"
 
-Write-Host "Deploying backend code to Raspberry Pi at $piIP..."
+Write-Host "Deploying gateway code to Raspberry Pi at $piIP..."
 
 # Using scp to copy the files over. Ensure ssh keys are set up or be prepared to enter a password.
-scp -r .\src\pi\* ${piUser}@${piIP}:${piDestDir}/
+scp -r .\gateway\src\* ${piUser}@${piIP}:${piDestDir}/
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host "Deployment successful. Restarting Pi service..." -ForegroundColor Green

@@ -1,7 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const net = require('net');
-const dgram = require('dgram');
 
 const PI_IP = '10.250.2.247';
 const PI_PORT = 5005;
@@ -9,6 +8,7 @@ const PI_PORT = 5005;
 let mainWindow;
 let piSocket = null;
 let piDataBuffer = "";
+let tcpVideoServer = null;
 
 function createWindow() {
     mainWindow = new BrowserWindow({
@@ -25,8 +25,8 @@ function createWindow() {
 
     mainWindow.loadFile('index.html');
 
-    mainWindow.webContents.on('console-message', (event, ...args) => {
-        console.log(`[Renderer]`, ...args);
+    mainWindow.webContents.on('console-message', (event, level, message, line, sourceId) => {
+        console.log(`[Renderer] ${message}`);
     });
 
     // Handle race condition: Send status immediately when UI finishes loading
@@ -138,7 +138,7 @@ function startTcpStreamServer() {
         });
     });
 
-    global.tcpServer = tcpServer;
+    tcpVideoServer = tcpServer;
 
     tcpServer.listen(5006, () => {
         console.log('TCP Stream Server listening for high-res video on port 5006');
@@ -166,8 +166,8 @@ app.on('window-all-closed', () => {
 app.on('before-quit', () => {
     // Attempt graceful shutdown of sockets when quitting
     if (piSocket) piSocket.destroy();
-    if (global.tcpServer) {
-        try { global.tcpServer.close(); } catch(e) {}
+    if (tcpVideoServer) {
+        try { tcpVideoServer.close(); } catch(e) {}
     }
 });
 

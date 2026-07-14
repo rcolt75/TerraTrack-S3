@@ -156,7 +156,7 @@ class CameraStreamer:
                         end_idx += 2
                         jpg_data = buf[start_idx:end_idx] # pyre-ignore
                         
-                        # Advance buffer pass this frame
+                        # Advance buffer past this frame
                         buf = buf[end_idx:] # pyre-ignore
                         
                         if self.server_socket is not None:
@@ -170,13 +170,12 @@ class CameraStreamer:
                                 break
 
             else:
-                # Generate a synthetic moving frame
+                # Generate a synthetic moving frame for testing without hardware
                 frame = np.zeros((self.height, self.width, 3), dtype=np.uint8)
-                cv2.putText(frame, "SPI CAMERA OFFLINE", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2) # pyre-ignore
+                cv2.putText(frame, "IMX477 CAMERA OFFLINE", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2) # pyre-ignore
                 
-                # Make sure frame_counter is an int so Pyre doesn't complain about concatenation or math
                 fc_int = int(frame_counter)
-                cv2.putText(frame,("UDP STREAM ACTIVE: " + str(fc_int)), (50, 200), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2) # pyre-ignore
+                cv2.putText(frame, ("TCP STREAM ACTIVE: " + str(fc_int)), (50, 200), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2) # pyre-ignore
                 
                 # Bouncing square
                 x_pos = int((fc_int * 5) % (self.width - 50))
@@ -185,13 +184,12 @@ class CameraStreamer:
                 frame_counter = int(fc_int + 1)
 
                 # Encode frame as JPEG
-                encode_param = [1, 40] # 1 is cv2.IMWRITE_JPEG_QUALITY
+                encode_param = [cv2.IMWRITE_JPEG_QUALITY, 40]
                 result, encimg = cv2.imencode('.jpg', frame, encode_param)
                 
                 if not result:
                     continue
 
-                data = encimg.tobytes()
                 data = encimg.tobytes()
                 if self.server_socket is not None:
                     try:
@@ -213,4 +211,11 @@ class CameraStreamer:
             p.terminate()
             p.wait()
             self.process = None
+        sock = self.server_socket
+        if sock is not None:
+            try:
+                sock.close()
+            except Exception:
+                pass
+            self.server_socket = None
         print("Camera streaming stopped.")

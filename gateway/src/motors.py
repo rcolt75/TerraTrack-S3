@@ -91,7 +91,7 @@ class MotorController:
 
     def stop(self):
         if not self.ser: return
-        self.send_json({"T": 1, "L": 0.0, "R": 0.0})
+        self.send_json({"T": 1, "L": 0, "R": 0})
         
     def close(self):
         self.stop()

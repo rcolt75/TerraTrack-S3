@@ -2,7 +2,7 @@ import socket
 import json
 import threading
 import time
-import time
+import traceback
 import subprocess
 from typing import Optional
 from motors import MotorController
@@ -35,7 +35,7 @@ class HVACServer:
         self.server_socket = sock
         self.running = True
 
-        print(f"HVAC Crawler Server listening on {self.host}:{self.port}")
+        print(f"TerraTrack-S3 Server listening on {self.host}:{self.port}")
 
         try:
             while self.running:
@@ -51,7 +51,7 @@ class HVACServer:
                 print(f"Connected to controller at {address}")
                 self.active_client_sock = client_sock
                 
-                # Start camera stream to the connected client on a predefined UDP port
+                # Start camera stream to the connected client on a predefined TCP port
                 self.camera.start(target_ip=address[0], target_port=5006)
 
                 self.handle_client(client_sock)
@@ -87,19 +87,18 @@ class HVACServer:
                     self.process_command(line)
 
             except socket.error as e:
-                import traceback
-                with open('/tmp/hvac_err.log', 'a') as f:
+                with open('/tmp/terratrack_err.log', 'a') as f:
                     f.write(f"Socket error: {e}\n{traceback.format_exc()}\n")
                 print(f"Socket error: {e}")
                 break
             except Exception as e:
-                import traceback
-                with open('/tmp/hvac_err.log', 'a') as f:
+                with open('/tmp/terratrack_err.log', 'a') as f:
                     f.write(f"Unhandled Exception: {e}\n{traceback.format_exc()}\n")
                 print(f"Error handling client data: {e}")
                 # DON'T break the connection! Just ignore the bad packet.
 
     def process_command(self, raw_data):
+        action = None
         try:
             cmd = json.loads(raw_data)
             action = cmd.get('action')
@@ -157,10 +156,9 @@ class HVACServer:
         except json.JSONDecodeError:
             print(f"Failed to decode JSON: {raw_data}")
         except Exception as e:
-            import traceback
-            with open('/tmp/hvac_err.log', 'a') as f:
+            with open('/tmp/terratrack_err.log', 'a') as f:
                 f.write(f"Command processing error: {e}\n{traceback.format_exc()}\nRaw: {raw_data}\n")
-            print(f"Error processing command {action}: {e}")
+            print(f"Error processing command '{action}': {e}")
 
     def send_telemetry(self, data):
         if self.active_client_sock:
@@ -171,7 +169,7 @@ class HVACServer:
                 pass # Handled by main socket loop if client disconnected
 
     def _wifi_poller(self):
-        while True:
+        while self.running:
             if self.active_client_sock:
                 try:
                     with open('/proc/net/wireless', 'r') as f:
@@ -192,7 +190,10 @@ class HVACServer:
         self.camera.stop()
         sock = self.server_socket
         if sock is not None:
-            sock.close()
+            try:
+                sock.close()
+            except Exception:
+                pass
 
 if __name__ == '__main__':
     server = HVACServer()

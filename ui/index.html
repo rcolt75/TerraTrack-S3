@@ -2,9 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>HVAC Crawler Dashboard</title>
+    <title>TerraTrack-S3 Dashboard</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;800&family=Orbitron:wght@500;700;900&display=swap');
+        
+        :root {
+            --color-primary: #00e5ff;
+            --color-accent: #ff6d00;
+            --color-danger: #ff4081;
+            --color-success: #00e75a;
+            --color-bg-deep: #090b10;
+            --color-bg-panel: rgba(10, 14, 23, 0.7);
+            --color-text: #e2e8f0;
+            --color-text-muted: #94a3b8;
+            --font-display: 'Orbitron', sans-serif;
+            --font-body: 'Exo 2', sans-serif;
+        }
         
         body { 
             font-family: 'Exo 2', sans-serif; 
@@ -41,10 +54,37 @@
             align-items: center;
             border-bottom: 1px solid rgba(0, 255, 204, 0.3);
             padding-bottom: 15px;
+            position: relative;
         }
         
-        h1 { margin: 0; font-size: 32px; font-weight: 900; letter-spacing: 4px; color: #e2e8f0; font-family: 'Orbitron', sans-serif; text-transform: uppercase; text-shadow: 0 0 10px rgba(0,229,255,0.3);}
-        h1 span { color: #00e5ff; font-weight: 900; text-shadow: 0 0 15px rgba(0,229,255,0.8);}
+        /* Animated accent bar under header */
+        header::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--color-primary), var(--color-accent), var(--color-primary), transparent);
+            background-size: 200% 100%;
+            animation: accentSweep 4s linear infinite;
+        }
+        @keyframes accentSweep {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .header-title-group { display: flex; align-items: baseline; gap: 12px; }
+        .version-badge { font-family: var(--font-display); font-size: 10px; color: var(--color-accent); letter-spacing: 2px; border: 1px solid rgba(255,109,0,0.4); padding: 2px 8px; border-radius: 2px; vertical-align: middle; }
+        
+        h1 { margin: 0; font-size: 32px; font-weight: 900; letter-spacing: 4px; color: var(--color-text); font-family: var(--font-display); text-transform: uppercase; text-shadow: 0 0 10px rgba(0,229,255,0.3);}
+        h1 span { color: var(--color-primary); font-weight: 900; text-shadow: 0 0 15px rgba(0,229,255,0.8);}
+        
+        /* LIVE indicator for camera feed */
+        .live-badge { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-display); font-size: 11px; font-weight: 700; color: var(--color-danger); letter-spacing: 2px; margin-left: 10px; opacity: 0; transition: opacity 0.3s; }
+        .live-badge.active { opacity: 1; }
+        .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-danger); animation: livePulse 1.5s ease-in-out infinite; }
+        @keyframes livePulse { 0%,100% { opacity: 1; box-shadow: 0 0 4px var(--color-danger); } 50% { opacity: 0.4; box-shadow: 0 0 12px var(--color-danger); } }
+        
+        /* Button container layout classes */
+        .btn-row { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; justify-content: center; }
+        .btn-row .action-btn { flex: 1; min-width: 20%; }
+        .btn-hint { font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 5px; font-weight: normal; letter-spacing: 1px; }
         
         @keyframes pulseConnected {
             0% { box-shadow: 0 0 5px #00e5ff, inset 0 0 5px #00e5ff; }
@@ -279,7 +319,10 @@
 <body>
     <div class="dashboard">
         <header>
-            <h1>HVAC <span>CRAWLER</span></h1>
+            <div class="header-title-group">
+                <h1>TERRA<span>TRACK</span>-S3</h1>
+                <span class="version-badge">v1.0.0</span>
+            </div>
             
             <div style="display: flex; gap: 15px; align-items: center;">
                 <!-- Telemetry Badges -->
@@ -312,32 +355,32 @@
         </header>
 
         <div class="panel main-panel">
-            <h2>Live Camera Feed</h2>
+            <h2>Live Camera Feed <span id="live-badge" class="live-badge"><span class="live-dot"></span>LIVE</span></h2>
             <div class="video-container">
                 <div class="no-signal">NO SIGNAL</div>
                 <img id="camera-img" src="" alt="Live Video" />
             </div>
             
-            <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; justify-content: center;">
-                <button id="btn-zoom-in" class="action-btn" style="flex: 1; min-width: 20%;">
+            <div class="btn-row">
+                <button id="btn-zoom-in" class="action-btn">
                     ZOOM IN
-                    <div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 5px; font-weight: normal; letter-spacing: 1px;">[D-PAD UP]</div>
+                    <div class="btn-hint">[D-PAD UP]</div>
                 </button>
-                <button id="btn-zoom-out" class="action-btn" style="flex: 1; min-width: 20%;">
+                <button id="btn-zoom-out" class="action-btn">
                     ZOOM OUT
-                    <div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 5px; font-weight: normal; letter-spacing: 1px;">[D-PAD DN]</div>
+                    <div class="btn-hint">[D-PAD DN]</div>
                 </button>
-                <button id="btn-optical" class="action-btn" style="flex: 1; min-width: 20%;">
+                <button id="btn-optical" class="action-btn">
                     OPTICAL 1X
-                    <div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 5px; font-weight: normal; letter-spacing: 1px;">[BTN B]</div>
+                    <div class="btn-hint">[BTN B]</div>
                 </button>
-                <button id="btn-ai" class="action-btn active" style="flex: 1; min-width: 20%;">
+                <button id="btn-ai" class="action-btn active">
                     AI TRACKING
-                    <div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 5px; font-weight: normal; letter-spacing: 1px;">[CLICK TO TOGGLE]</div>
+                    <div class="btn-hint">[CLICK]</div>
                 </button>
-                <button id="btn-speed" class="action-btn active" style="flex: 1; min-width: 20%; border-color: #ff6d00; color: #ff6d00;">
+                <button id="btn-speed" class="action-btn active" style="border-color: var(--color-accent); color: var(--color-accent);">
                     SPEED: FAST
-                    <div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 5px; font-weight: normal; letter-spacing: 1px;">[D-PAD RIGHT]</div>
+                    <div class="btn-hint">[D-PAD RIGHT]</div>
                 </button>
             </div>
         </div>
@@ -345,18 +388,18 @@
         <div class="sidebar">
             <div class="panel sidebar-panel" style="margin-bottom: 5px;">
                 <h2>Vehicle Functions</h2>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button id="btn-ir" class="action-btn" style="flex: 1; min-width: 30%;">
+                <div class="btn-row" style="margin-top: 0;">
+                    <button id="btn-ir" class="action-btn" style="min-width: 30%;">
                         GREYSCALE
-                        <div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 5px; font-weight: normal; letter-spacing: 1px;">[BTN X]</div>
+                        <div class="btn-hint">[BTN X]</div>
                     </button>
-                    <button id="btn-led" class="action-btn" style="flex: 1; min-width: 30%;">
+                    <button id="btn-led" class="action-btn" style="min-width: 30%;">
                         HEADLIGHTS
-                        <div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 5px; font-weight: normal; letter-spacing: 1px;">[BTN Y]</div>
+                        <div class="btn-hint">[BTN Y]</div>
                     </button>
-                    <button id="btn-hdr" class="action-btn" style="flex: 1; min-width: 30%;">
+                    <button id="btn-hdr" class="action-btn" style="min-width: 30%;">
                         HDR MODE
-                        <div style="font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 5px; font-weight: normal; letter-spacing: 1px;">[BTN A]</div>
+                        <div class="btn-hint">[BTN A]</div>
                     </button>
                 </div>
             </div>

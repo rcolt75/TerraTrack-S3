@@ -26,7 +26,7 @@ This protocol layer runs over a local area network (LAN) using standard TCP/IP. 
 The Electron App connects to the Raspberry Pi 5 command server as a TCP client. The communication payload consists of newline-delimited (`\n`) JSON packets.
 
 #### A. Drive & Actuation Command
-Sent by the dashboard client at 60 Hz to update motor speeds, headlight status, and continuous servo actuation.
+Sent by the dashboard client at up to 20 Hz (throttled to 50ms intervals) to update motor speeds, headlight status, and continuous servo actuation.
 
 - **Direction**: Client -> Gateway
 - **Payload Schema**:
@@ -105,7 +105,7 @@ Upon client connection to port 5005, the Gateway initiates an MJPEG video stream
 - **Protocol**: Raw TCP Stream.
 - **Payload Format**: Each frame is transmitted as a 4-byte big-endian length header followed by raw JPEG bytes.
   - `[4-Byte Big-Endian Header (Length: N)] + [N-Bytes of Raw JPEG data]`
-- **Client Parsing**: The Electron client reads the 4-byte header, accumulates `N` bytes, parses the JPEG, and renders it directly onto an HTML5 `<canvas>` element at 60 FPS.
+- **Client Parsing**: The Electron client reads the 4-byte header, accumulates `N` bytes, parses the JPEG, and sets it as a Base64 data URI on an HTML5 `<img>` element for real-time display.
 
 ---
 
